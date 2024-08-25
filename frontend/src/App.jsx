@@ -61,7 +61,7 @@ function App() {
         {selectedOptions.includes('highest_alphabet') && response.highest_alphabet && (
           <div>
             <h3>Highest Alphabet:</h3>
-            <p>{response.highest_alphabet}</p>
+            <p>{response.highest_lowercase_alphabet}</p>
           </div>
         )}
       </div>
