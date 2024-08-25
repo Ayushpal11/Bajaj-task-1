@@ -58,7 +58,7 @@ function App() {
             <p>{response.numbers.join(', ')}</p>
           </div>
         )}
-        {selectedOptions.includes('highest_alphabet') && response.highest_alphabet && (
+        {selectedOptions.includes('highest_alphabet') && response.highest_lowercase_alphabet && (
           <div>
             <h3>Highest Alphabet:</h3>
             <p>{response.highest_lowercase_alphabet}</p>
