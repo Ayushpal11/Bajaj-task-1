@@ -8,7 +8,6 @@ function App() {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [error, setError] = useState('');
 
-  // Set the website title to your roll number
   useEffect(() => {
     document.title = "21BCE2518";
   }, []);
@@ -24,11 +23,16 @@ function App() {
 
     try {
       const parsedInput = JSON.parse(jsonInput);
-      const res = await axios.post('https://bajaj-task-1.onrender.com/bfhl', { data: parsedInput.data });
-      console.log(res.data);
+      const res = await axios.post('https://bajaj-task-1.onrender.com/bfhl', parsedInput);
       setResponse(res.data);
     } catch (error) {
-      setError('Invalid JSON input or Error fetching data');
+      if (error.response) {
+        setError(`Error: ${error.response.data.message}`);
+      } else if (error.request) {
+        setError('Error: No response from server. Please try again later.');
+      } else {
+        setError('Invalid JSON input or Error fetching data');
+      }
     }
   };
 
@@ -36,31 +40,28 @@ function App() {
     const value = Array.from(e.target.selectedOptions, option => option.value);
     setSelectedOptions(value);
   };
-  <div>
-    Select control + click to select multiple options.
-  </div>
 
   const renderFilteredResponse = () => {
     if (!response) return null;
 
     return (
       <div className="filtered-response">
-        {selectedOptions.includes('numbers') && (
-          <div>
-            <h3>Numbers:</h3>
-            <p>{response.numbers.join(', ')}</p>
-          </div>
-        )}
-        {selectedOptions.includes('alphabets') && (
+        {selectedOptions.includes('alphabets') && response.alphabets && (
           <div>
             <h3>Alphabets:</h3>
             <p>{response.alphabets.join(', ')}</p>
           </div>
         )}
-        {selectedOptions.includes('highest_alphabet') && (
+        {selectedOptions.includes('numbers') && response.numbers && (
+          <div>
+            <h3>Numbers:</h3>
+            <p>{response.numbers.join(', ')}</p>
+          </div>
+        )}
+        {selectedOptions.includes('highest_alphabet') && response.highest_alphabet && (
           <div>
             <h3>Highest Alphabet:</h3>
-            <p>{response.highest_alphabet.join(', ')}</p>
+            <p>{response.highest_alphabet}</p>
           </div>
         )}
       </div>
@@ -69,17 +70,19 @@ function App() {
 
   return (
     <div className="App">
-      <h1>{'21BCE2518'}</h1>
-      <input 
-        type="text" 
+      <h1>21BCE2518</h1>
+      <textarea 
         value={jsonInput} 
         onChange={handleInputChange} 
-        placeholder='Enter JSON input' 
+        placeholder='Enter JSON input (e.g., { "data": ["A","1","B","2","C","3"] })' 
         className="json-input"
       />
       {error && <p className="error">{error}</p>}
+      <button onClick={handleSubmit} className="submit-button">Submit</button>
+      <div>Ctrl+Select for multiple filters</div>
       {response && (
         <div>
+          <label>Select the filters to display:</label>
           <select multiple onChange={handleOptionChange} className="multi-select">
             <option value="alphabets">Alphabets</option>
             <option value="numbers">Numbers</option>
@@ -88,8 +91,6 @@ function App() {
           {renderFilteredResponse()}
         </div>
       )}
-
-<button onClick={handleSubmit} className="submit-button" >Submit</button>
     </div>
   );
 }
